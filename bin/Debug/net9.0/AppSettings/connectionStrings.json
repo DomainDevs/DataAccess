@@ -1,0 +1,14 @@
+{
+  "ConnectionStrings": {
+    "SqlServer": "server=localhost;database=PRUEBAS;user id=sqluser;password=skf9nfi7; Pooling=true;Min Pool Size=3;Max Pool Size=30;Connection Timeout=15;APP=LIB;Language=us_english;Encrypt=True;TrustServerCertificate=True",
+    "Sybase": "Data Source=SYBASE_SERVER;Port=5000;UID=sa;PWD=yourpassword;",
+    "MongoDb": "mongodb://localhost:27017"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*"
+}
