@@ -1,4 +1,6 @@
-﻿namespace SolucionDA.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace SolucionDA.Models
 {
     public class Empleado
     {

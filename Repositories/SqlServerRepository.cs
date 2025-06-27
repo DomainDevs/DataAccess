@@ -7,98 +7,64 @@ using System.Threading.Tasks;
 
 namespace SolucionDA.Repositories;
 
+//  public interface IRepository<T> where T : class
 public class SqlServerRepository<T> : IRepository<T> where T : class
 {
     private readonly IDbConnection _connection;
     private readonly IDbTransaction _transaction;
+    private readonly string _tableName;
 
     public SqlServerRepository(IDbConnection connection, IDbTransaction transaction)
     {
         _connection = connection;
         _transaction = transaction;
+        _tableName = typeof(T).Name;
     }
 
     public async Task<IEnumerable<T>> GetAllAsync()
     {
-        return await _connection.QueryAsync<T>($"SELECT * FROM {typeof(T).Name}", transaction: _transaction);
+        var sql = $"SELECT * FROM {_tableName}";
+        return await _connection.QueryAsync<T>(sql, transaction: _transaction);
     }
 
-    public async Task<T> GetByIdAsync(object key)
+    public async Task<T?> GetByIdAsync(Dictionary<string, object> keys)
     {
-        string sql;
-        DynamicParameters parameters = new();
-
-        if (key is IDictionary<string, object> keys)
-        {
-            var conditions = string.Join(" AND ", keys.Select(k =>
-            {
-                parameters.Add(k.Key, k.Value);
-                return $"{k.Key} = @{k.Key}";
-            }));
-            sql = $"SELECT * FROM {typeof(T).Name} WHERE {conditions}";
-        }
-        else
-        {
-            parameters.Add("Id", key);
-            sql = $"SELECT * FROM {typeof(T).Name} WHERE Id = @Id";
-        }
-
-        return (await _connection.QueryAsync<T>(sql, parameters, _transaction)).FirstOrDefault();
+        var whereClause = string.Join(" AND ", keys.Keys.Select(k => $"{k} = @{k}"));
+        var sql = $"SELECT * FROM {_tableName} WHERE {whereClause}";
+        return await _connection.QueryFirstOrDefaultAsync<T>(sql, keys, _transaction);
     }
 
     public async Task<int> InsertAsync(T entity)
     {
-        var type = typeof(T);
-        var tableName = type.Name;
-
-        var properties = type.GetProperties()
-            .Where(p => p.CanRead && !string.Equals(p.Name, "Id", System.StringComparison.OrdinalIgnoreCase))
+        var props = typeof(T).GetProperties()
+            .Where(p => p.CanRead && p.GetValue(entity) != null)
             .ToList();
 
-        var columnNames = string.Join(", ", properties.Select(p => p.Name));
-        var paramNames = string.Join(", ", properties.Select(p => "@" + p.Name));
+        var columns = string.Join(", ", props.Select(p => p.Name));
+        var values = string.Join(", ", props.Select(p => $"@{p.Name}"));
+        var sql = $"INSERT INTO {_tableName} ({columns}) VALUES ({values})";
 
-        var sql = $"INSERT INTO {tableName} ({columnNames}) VALUES ({paramNames})";
         return await _connection.ExecuteAsync(sql, entity, _transaction);
     }
 
     public async Task<int> UpdateAsync(T entity)
     {
-        var type = typeof(T);
-        var tableName = type.Name;
-        var properties = type.GetProperties().Where(p => p.CanRead).ToList();
+        var props = typeof(T).GetProperties().Where(p => p.CanRead).ToList();
+        var keys = props.Where(p => p.Name.EndsWith("Id") || p.Name.StartsWith("Tipo") || p.Name.StartsWith("Codigo")).ToList();
 
-        var keyProps = properties.Where(p => p.Name.EndsWith("Id") || p.Name.ToLower() == "id").ToList();
-        var nonKeyProps = properties.Except(keyProps).ToList();
+        var setters = string.Join(", ", props.Where(p => !keys.Contains(p)).Select(p => $"{p.Name} = @{p.Name}"));
+        var where = string.Join(" AND ", keys.Select(p => $"{p.Name} = @{p.Name}"));
 
-        var setClause = string.Join(", ", nonKeyProps.Select(p => $"{p.Name} = @{p.Name}"));
-        var whereClause = string.Join(" AND ", keyProps.Select(p => $"{p.Name} = @{p.Name}"));
+        var sql = $"UPDATE {_tableName} SET {setters} WHERE {where}";
 
-        var sql = $"UPDATE {tableName} SET {setClause} WHERE {whereClause}";
         return await _connection.ExecuteAsync(sql, entity, _transaction);
     }
 
-    public async Task<int> DeleteAsync(object key)
+    public async Task<int> DeleteAsync(Dictionary<string, object> keys)
     {
-        string sql;
-        DynamicParameters parameters = new();
-
-        if (key is IDictionary<string, object> keys)
-        {
-            var conditions = string.Join(" AND ", keys.Select(k =>
-            {
-                parameters.Add(k.Key, k.Value);
-                return $"{k.Key} = @{k.Key}";
-            }));
-            sql = $"DELETE FROM {typeof(T).Name} WHERE {conditions}";
-        }
-        else
-        {
-            parameters.Add("Id", key);
-            sql = $"DELETE FROM {typeof(T).Name} WHERE Id = @Id";
-        }
-
-        return await _connection.ExecuteAsync(sql, parameters, _transaction);
+        var whereClause = string.Join(" AND ", keys.Keys.Select(k => $"{k} = @{k}"));
+        var sql = $"DELETE FROM {_tableName} WHERE {whereClause}";
+        return await _connection.ExecuteAsync(sql, keys, _transaction);
     }
 
     public async Task<IEnumerable<T>> ExecuteStoredProcedureAsync(string storedProcedure, object parameters)
@@ -106,7 +72,7 @@ public class SqlServerRepository<T> : IRepository<T> where T : class
         return await _connection.QueryAsync<T>(
             storedProcedure,
             parameters,
-            _transaction,
+            transaction: _transaction,
             commandType: CommandType.StoredProcedure
         );
     }
@@ -116,9 +82,8 @@ public class SqlServerRepository<T> : IRepository<T> where T : class
         return await _connection.QueryAsync<TResult>(
             storedProcedure,
             parameters,
-            _transaction,
+            transaction: _transaction,
             commandType: CommandType.StoredProcedure
         );
     }
-
 }

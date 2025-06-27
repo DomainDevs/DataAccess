@@ -4,6 +4,6 @@ namespace SolucionDA.DatabaseAccess
 {
     public interface IDbConnectionFactory
     {
-        IDbConnection CreateConnection();
+        IDbConnection CreateConnection(string dbAlias);
     }
 }

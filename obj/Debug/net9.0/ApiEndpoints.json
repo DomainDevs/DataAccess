@@ -275,6 +275,26 @@
     ]
   },
   {
+    "ContainingType": "SolucionDA.Controllers.RamoController",
+    "Method": "Get",
+    "RelativePath": "Ramo",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[SolucionDA.Models.tramo, SolucionDA, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
     "ContainingType": "SolucionDA.Controllers.WeatherForecastController",
     "Method": "Get",
     "RelativePath": "WeatherForecast",

@@ -470,6 +470,44 @@
         }
       }
     },
+    "/Ramo": {
+      "get": {
+        "tags": [
+          "Ramo"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/tramo"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/tramo"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/tramo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/WeatherForecast": {
       "get": {
         "tags": [
@@ -587,6 +625,20 @@
             "readOnly": true
           },
           "summary": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "tramo": {
+        "type": "object",
+        "properties": {
+          "cod_ramo": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "txt_desc": {
             "type": "string",
             "nullable": true
           }

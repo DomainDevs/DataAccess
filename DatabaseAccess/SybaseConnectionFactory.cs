@@ -1,19 +1,32 @@
 ﻿using System.Data;
-using Microsoft.Extensions.Configuration;
-using AdoNetCore.AseClient;     // Sap.Data.AseClient;
+using AdoNetCore.AseClient;
 
 namespace SolucionDA.DatabaseAccess
 {
     public class SybaseConnectionFactory : IDbConnectionFactory
     {
-        private readonly string _connectionString;
+        private readonly IConfiguration _configuration;
+        private readonly Dictionary<string, string> _connectionStrings;
 
         public SybaseConnectionFactory(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString("Sybase");
+            _configuration = configuration;
+            _connectionStrings = new Dictionary<string, string>();
+
+            var connectionSection = _configuration.GetSection("ConnectionStrings");
+            foreach (var child in connectionSection.GetChildren())
+            {
+                _connectionStrings[child.Key] = child.Value!;
+            }
         }
 
-        public IDbConnection CreateConnection()
-            => new AseConnection(_connectionString);
+        public IDbConnection CreateConnection(string dbAlias)
+        {
+            if (!_connectionStrings.ContainsKey(dbAlias))
+                throw new ArgumentException($"Alias de conexión no válido: '{dbAlias}'.");
+
+            var connStr = _connectionStrings[dbAlias];
+            return new AseConnection(connStr);
+        }
     }
 }

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Devs\\Core\\ConsecutivosSQLServer\\DataAccess\\SolucionDA\\SolucionDA\\SolucionDA.csproj": {}
+    "C:\\Devs\\Core\\DataAccess\\SolucionDA.csproj": {}
   },
   "projects": {
-    "C:\\Devs\\Core\\ConsecutivosSQLServer\\DataAccess\\SolucionDA\\SolucionDA\\SolucionDA.csproj": {
+    "C:\\Devs\\Core\\DataAccess\\SolucionDA.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Devs\\Core\\ConsecutivosSQLServer\\DataAccess\\SolucionDA\\SolucionDA\\SolucionDA.csproj",
+        "projectUniqueName": "C:\\Devs\\Core\\DataAccess\\SolucionDA.csproj",
         "projectName": "SolucionDA",
-        "projectPath": "C:\\Devs\\Core\\ConsecutivosSQLServer\\DataAccess\\SolucionDA\\SolucionDA\\SolucionDA.csproj",
+        "projectPath": "C:\\Devs\\Core\\DataAccess\\SolucionDA.csproj",
         "packagesPath": "C:\\Users\\admin\\.nuget\\packages\\",
-        "outputPath": "C:\\Devs\\Core\\ConsecutivosSQLServer\\DataAccess\\SolucionDA\\SolucionDA\\obj\\",
+        "outputPath": "C:\\Devs\\Core\\DataAccess\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -69,6 +69,10 @@
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[9.0.1, )"
+            },
+            "System.ComponentModel.Annotations": {
+              "target": "Package",
+              "version": "[5.0.0, )"
             }
           },
           "imports": [

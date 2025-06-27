@@ -1,14 +1,13 @@
 {
   "ConnectionStrings": {
-    "SqlServer": "server=localhost;database=PRUEBAS;user id=sqluser;password=skf9nfi7; Pooling=true;Min Pool Size=3;Max Pool Size=30;Connection Timeout=15;APP=LIB;Language=us_english;Encrypt=True;TrustServerCertificate=True",
-    "Sybase": "Data Source=SYBASE_SERVER;Port=5000;UID=sa;PWD=yourpassword;",
-    "MongoDb": "mongodb://localhost:27017"
+    "SqlServer": "Server=localhost;Database=PRUEBAS;User Id=sqluser;Password=skf9nfi7;Pooling=true;Min Pool Size=3;Max Pool Size=30;Connection Timeout=15;APP=LIB;Language=us_english;Encrypt=True;TrustServerCertificate=True",
+    "Sybase": "Data Source=10.40.10.69;Port=9100;Database=generales;Uid=dariopoveda;Pwd=UgiKxjiD*;"
   },
-  "Logging": {
-    "LogLevel": {
-      "Default": "Information",
-      "Microsoft.AspNetCore": "Warning"
-    }
-  },
-  "AllowedHosts": "*"
-}
+    "Logging": {
+      "LogLevel": {
+        "Default": "Information",
+        "Microsoft.AspNetCore": "Warning"
+      }
+    },
+    "AllowedHosts": "*"
+  }

@@ -22,15 +22,16 @@ public class ClienteController : ControllerBase
     [HttpGet]
     public async Task<IEnumerable<Cliente>> Get()
     {
-        var repo = _unitOfWork.GetRepository<Cliente>();
+        var repo = _unitOfWork.GetRepository<Cliente>("SqlServer");
         return await repo.GetAllAsync();
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<Cliente>> GetById(int id)
     {
-        var repo = _unitOfWork.GetRepository<Cliente>();
-        var cliente = await repo.GetByIdAsync(id);
+        var key = new Dictionary<string, object> { { "Id", id } };
+        var repo = _unitOfWork.GetRepository<Cliente>("SqlServer");
+        var cliente = await repo.GetByIdAsync(key);
 
         if (cliente == null)
             return NotFound();
@@ -41,9 +42,9 @@ public class ClienteController : ControllerBase
     [HttpPost]
     public async Task<ActionResult> Post([FromBody] Cliente cliente)
     {
-        var repo = _unitOfWork.GetRepository<Cliente>();
-        var result = await repo.InsertAsync(cliente);
-        _unitOfWork.Commit();
+        var repo = _unitOfWork.GetRepository<Cliente>("SqlServer");
+        await repo.InsertAsync(cliente);
+        _unitOfWork.Commit("SqlServer");
 
         return CreatedAtAction(nameof(GetById), new { id = cliente.Id }, cliente);
     }
@@ -51,12 +52,12 @@ public class ClienteController : ControllerBase
     [HttpPut("{id}")]
     public async Task<ActionResult> Put(int id, [FromBody] Cliente cliente)
     {
-        if (id != cliente.Id)
+        if (cliente.Id != id)
             return BadRequest();
 
-        var repo = _unitOfWork.GetRepository<Cliente>();
+        var repo = _unitOfWork.GetRepository<Cliente>("SqlServer");
         await repo.UpdateAsync(cliente);
-        _unitOfWork.Commit();
+        _unitOfWork.Commit("SqlServer");
 
         return NoContent();
     }
@@ -64,9 +65,10 @@ public class ClienteController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<ActionResult> Delete(int id)
     {
-        var repo = _unitOfWork.GetRepository<Cliente>();
-        await repo.DeleteAsync(id);
-        _unitOfWork.Commit();
+        var key = new Dictionary<string, object> { { "Id", id } };
+        var repo = _unitOfWork.GetRepository<Cliente>("SqlServer");
+        await repo.DeleteAsync(key);
+        _unitOfWork.Commit("SqlServer");
 
         return NoContent();
     }

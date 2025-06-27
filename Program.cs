@@ -1,29 +1,36 @@
-using System.Data;
-using Microsoft.Data.SqlClient;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using SolucionDA.DatabaseAccess;
 using SolucionDA.UnitOfWork;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Leer la cadena de conexi�n desde appsettings.json
-var connectionString = builder.Configuration.GetConnectionString("SqlServer");
-
-// Inyecci�n de dependencias
-builder.Services.AddScoped<IDbConnection>(sp => new SqlConnection(connectionString));
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-builder.Services.AddControllers();
+// Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Controllers
+builder.Services.AddControllers();
+
+// 🔌 Inyección del factory que resuelve múltiples motores
+builder.Services.AddSingleton<IDbConnectionFactory, MultiDbConnectionFactory>();
+
+// 💼 Inyección de UnitOfWork
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
 var app = builder.Build();
 
-// Middleware de desarrollo
+// Swagger UI en desarrollo
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
+// HTTPS + Controllers
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
